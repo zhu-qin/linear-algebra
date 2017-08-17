@@ -1,0 +1,25 @@
+.flex {
+  display: flex;
+  justify-content: center;
+}
+
+.unit {
+  width: 30px;
+  height: 30px;
+  border: 1px solid gray;
+  margin: 1px;
+  text-align: center;
+}
+
+.button {
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 2px;
+  width: 100px;
+  cursor: pointer;
+  margin: 2px;
+}
+
+.blue {
+  background-color: blue;
+}
