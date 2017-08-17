@@ -11,15 +11,17 @@
   text-align: center;
 }
 
-.button {
+button {
   padding: 10px;
   border: 1px solid gray;
   border-radius: 2px;
   width: 100px;
   cursor: pointer;
-  margin: 2px;
+  margin: 5px;
 }
 
-.blue {
-  background-color: blue;
+.matrix-wrapper {
+  padding: 10px;
+  margin: 20px;
+  border: 1px solid gray;
 }

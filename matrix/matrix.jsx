@@ -11,15 +11,12 @@ export class Matrix extends Component {
     }
   }
 
-  getState() {
-    return this.state
-  }
-
   componentDidMount() {
     this.updateMatrix(this.state.rows, this.state.columns)
   }
 
   updateMatrix(rowCount, columnCount) {
+
     let rows = Array(rowCount).fill().map((row, rowIdx) => {
       return Array(columnCount).fill().map((unit, colIdx) => {
         let existingRow = this.state.matrix[rowIdx]
@@ -32,6 +29,7 @@ export class Matrix extends Component {
         return value
       })
     })
+
     this.setState({ matrix: rows })
   }
 
@@ -65,7 +63,7 @@ export class Matrix extends Component {
     })
 
     return (
-      <div>
+      <div className="matrix-wrapper">
         <div className={'flex'}>
           <button onClick={this.createListener('rows', 1)}>Add Row</button>
           <button onClick={this.createListener('columns', 1)}>Add Column</button>

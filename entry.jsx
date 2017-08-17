@@ -6,19 +6,31 @@ import { Matrix } from './matrix/matrix';
 class Entry extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      matrixCount: 2
+    }
   }
 
   multiplyMatrix(e) {
-
+    debugger
   }
 
   render() {
+    let matrices = Array(this.state.matrixCount).fill().map((el, idx) => {
+      return <Matrix ref={(matrix) => this[`matrix${idx}`] = matrix}/>
+    })
+
     return (
       <div>
         <div className="flex">
-          {[ <Matrix ref={(first) => this.first = first}/>, <Matrix /> ]}
+          {matrices}
         </div>
-        <button onClick={this.multiplyMatrix.bind(this)}>Multiply</button>
+        <div className="flex">
+          <button onClick={this.multiplyMatrix.bind(this)}>Multiply</button>
+        </div>
+        <div className="flex">
+          <Matrix ref={(matrix) => this[`matrixResult`] = matrix}/>
+        </div>
       </div>
     )
   }

@@ -1087,11 +1087,6 @@ var Matrix = exports.Matrix = function (_Component) {
   }
 
   _createClass(Matrix, [{
-    key: "getState",
-    value: function getState() {
-      return this.state;
-    }
-  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.updateMatrix(this.state.rows, this.state.columns);
@@ -1113,6 +1108,7 @@ var Matrix = exports.Matrix = function (_Component) {
           return value;
         });
       });
+
       this.setState({ matrix: rows });
     }
   }, {
@@ -1159,7 +1155,7 @@ var Matrix = exports.Matrix = function (_Component) {
 
       return (0, _preact.h)(
         "div",
-        null,
+        { className: "matrix-wrapper" },
         (0, _preact.h)(
           "div",
           { className: 'flex' },
@@ -1219,16 +1215,29 @@ var Entry = function (_Component) {
   function Entry(props) {
     _classCallCheck(this, Entry);
 
-    return _possibleConstructorReturn(this, (Entry.__proto__ || Object.getPrototypeOf(Entry)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Entry.__proto__ || Object.getPrototypeOf(Entry)).call(this, props));
+
+    _this.state = {
+      matrixCount: 2
+    };
+    return _this;
   }
 
   _createClass(Entry, [{
     key: 'multiplyMatrix',
-    value: function multiplyMatrix(e) {}
+    value: function multiplyMatrix(e) {
+      debugger;
+    }
   }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
+
+      var matrices = Array(this.state.matrixCount).fill().map(function (el, idx) {
+        return (0, _preact.h)(_matrix.Matrix, { ref: function ref(matrix) {
+            return _this2['matrix' + idx] = matrix;
+          } });
+      });
 
       return (0, _preact.h)(
         'div',
@@ -1236,14 +1245,23 @@ var Entry = function (_Component) {
         (0, _preact.h)(
           'div',
           { className: 'flex' },
-          [(0, _preact.h)(_matrix.Matrix, { ref: function ref(first) {
-              return _this2.first = first;
-            } }), (0, _preact.h)(_matrix.Matrix, null)]
+          matrices
         ),
         (0, _preact.h)(
-          'button',
-          { onClick: this.multiplyMatrix.bind(this) },
-          'Multiply'
+          'div',
+          { className: 'flex' },
+          (0, _preact.h)(
+            'button',
+            { onClick: this.multiplyMatrix.bind(this) },
+            'Multiply'
+          )
+        ),
+        (0, _preact.h)(
+          'div',
+          { className: 'flex' },
+          (0, _preact.h)(_matrix.Matrix, { ref: function ref(matrix) {
+              return _this2['matrixResult'] = matrix;
+            } })
         )
       );
     }
