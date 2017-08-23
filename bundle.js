@@ -1045,150 +1045,7 @@ var preact = {
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Matrix = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _preact = __webpack_require__(0);
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/** @jsx h */
-
-var Matrix = exports.Matrix = function (_Component) {
-  _inherits(Matrix, _Component);
-
-  function Matrix(props) {
-    _classCallCheck(this, Matrix);
-
-    var _this = _possibleConstructorReturn(this, (Matrix.__proto__ || Object.getPrototypeOf(Matrix)).call(this, props));
-
-    _this.state = {
-      rows: 3,
-      columns: 3,
-      matrix: []
-    };
-    return _this;
-  }
-
-  _createClass(Matrix, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.updateMatrix(this.state.rows, this.state.columns);
-    }
-  }, {
-    key: "updateMatrix",
-    value: function updateMatrix(rowCount, columnCount) {
-      var _this2 = this;
-
-      var rows = Array(rowCount).fill().map(function (row, rowIdx) {
-        return Array(columnCount).fill().map(function (unit, colIdx) {
-          var existingRow = _this2.state.matrix[rowIdx];
-          var value = void 0;
-          if (existingRow && existingRow[colIdx]) {
-            value = Object.assign({}, existingRow[colIdx]);
-          } else {
-            value = { position: [rowIdx, colIdx], value: undefined };
-          }
-          return value;
-        });
-      });
-
-      this.setState({ matrix: rows });
-    }
-  }, {
-    key: "updateValue",
-    value: function updateValue(position) {
-      var _this3 = this;
-
-      return function (e) {
-        _this3.state.matrix[position[0]][position[1]].value = e.currentTarget.value;
-        _this3.setState({ matrix: _this3.state.matrix });
-      };
-    }
-  }, {
-    key: "createListener",
-    value: function createListener(vector, count) {
-      var _this4 = this;
-
-      return function (e) {
-        _this4.setState(_defineProperty({}, vector, _this4.state[vector] + count));
-        _this4.updateMatrix(_this4.state.rows, _this4.state.columns);
-      };
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _this5 = this;
-
-      var matrixView = this.state.matrix.map(function (row) {
-
-        var units = row.map(function (unit) {
-          return (0, _preact.h)("input", { type: "text",
-            className: "unit",
-            value: unit.value,
-            onChange: _this5.updateValue(unit.position),
-            position: unit.position });
-        });
-
-        return (0, _preact.h)(
-          "div",
-          { className: 'flex' },
-          units
-        );
-      });
-
-      return (0, _preact.h)(
-        "div",
-        { className: "matrix-wrapper" },
-        (0, _preact.h)(
-          "div",
-          { className: 'flex' },
-          (0, _preact.h)(
-            "button",
-            { onClick: this.createListener('rows', 1) },
-            "Add Row"
-          ),
-          (0, _preact.h)(
-            "button",
-            { onClick: this.createListener('columns', 1) },
-            "Add Column"
-          ),
-          (0, _preact.h)(
-            "button",
-            { onClick: this.createListener('rows', -1) },
-            "Delete Row"
-          ),
-          (0, _preact.h)(
-            "button",
-            { onClick: this.createListener('columns', -1) },
-            "Delete Column"
-          )
-        ),
-        matrixView
-      );
-    }
-  }]);
-
-  return Matrix;
-}(_preact.Component);
-
-/***/ }),
+/* 1 */,
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1199,7 +1056,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _preact = __webpack_require__(0);
 
-var _matrix = __webpack_require__(1);
+var _matrixView = __webpack_require__(6);
+
+var _multiplyMatrix2 = __webpack_require__(4);
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1226,19 +1087,23 @@ var Entry = function (_Component) {
   _createClass(Entry, [{
     key: 'multiplyMatrix',
     value: function multiplyMatrix(e) {
-      debugger;
+      var _this2 = this;
+
+      var matrices = Array(this.state.matrixCount).fill().map(function (matrix, idx) {
+        return _this2['matrix' + idx].state.matrix;
+      });
+      _multiplyMatrix2.multiplyMatrix.apply(undefined, _toConsumableArray(matrices));
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       var matrices = Array(this.state.matrixCount).fill().map(function (el, idx) {
-        return (0, _preact.h)(_matrix.Matrix, { ref: function ref(matrix) {
-            return _this2['matrix' + idx] = matrix;
+        return (0, _preact.h)(_matrixView.MatrixView, { ref: function ref(matrix) {
+            return _this3['matrix' + idx] = matrix;
           } });
       });
-
       return (0, _preact.h)(
         'div',
         null,
@@ -1259,8 +1124,8 @@ var Entry = function (_Component) {
         (0, _preact.h)(
           'div',
           { className: 'flex' },
-          (0, _preact.h)(_matrix.Matrix, { ref: function ref(matrix) {
-              return _this2['matrixResult'] = matrix;
+          (0, _preact.h)(_matrixView.MatrixView, { ref: function ref(matrix) {
+              return _this3['matrixResult'] = matrix;
             } })
         )
       );
@@ -1273,6 +1138,234 @@ var Entry = function (_Component) {
 document.addEventListener('DOMContentLoaded', function () {
   return (0, _preact.render)((0, _preact.h)(Entry, null), document.getElementById('root'));
 });
+
+/***/ }),
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.multiplyMatrix = multiplyMatrix;
+
+var _matrix = __webpack_require__(7);
+
+function multiplyMatrix() {
+  var currentResult = arguments[0];
+  for (var i = 1; i < arguments.length; i++) {
+    currentResult = multiplyTwoMatrices(currentResult, arguments[i]);
+  }
+  return currentResult;
+}
+
+function multiplyTwoMatrices(matrixOne, matrixTwo) {
+  var transposed = (0, _matrix.transpose)(matrixTwo);
+  for (var row = 0; row < matrixOne.length; row++) {}
+}
+
+function dotProduct(row, column) {
+  return row.reduce(function (sum, el, idx) {
+    sum = sum + row[idx] * column[idx];
+    return sum;
+  });
+}
+
+/***/ }),
+/* 5 */,
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MatrixView = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _preact = __webpack_require__(0);
+
+var _matrix = __webpack_require__(7);
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/** @jsx h */
+
+var MatrixView = exports.MatrixView = function (_Component) {
+  _inherits(MatrixView, _Component);
+
+  function MatrixView(props) {
+    _classCallCheck(this, MatrixView);
+
+    var _this = _possibleConstructorReturn(this, (MatrixView.__proto__ || Object.getPrototypeOf(MatrixView)).call(this, props));
+
+    _this.state = {
+      rows: 3,
+      columns: 3,
+      matrix: []
+    };
+    return _this;
+  }
+
+  _createClass(MatrixView, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.setState({ matrix: (0, _matrix.createMatrix)(this.state.rows, this.state.columns) });
+    }
+  }, {
+    key: 'transpose',
+    value: function transpose() {
+      this.setState({ matrix: (0, _matrix.transpose)(this.state.matrix) });
+    }
+  }, {
+    key: 'updateMatrix',
+    value: function updateMatrix(rowCount, columnCount) {
+      var newMatrix = (0, _matrix.createMatrix)(rowCount, columnCount, this.state.matrix);
+      this.setState({ matrix: newMatrix });
+    }
+  }, {
+    key: 'updateValue',
+    value: function updateValue(position) {
+      var _this2 = this;
+
+      return function (e) {
+        _this2.state.matrix[position[0]][position[1]].value = e.currentTarget.value;
+        _this2.setState({ matrix: _this2.state.matrix });
+      };
+    }
+  }, {
+    key: 'createListener',
+    value: function createListener(vector, count) {
+      var _this3 = this;
+
+      return function (e) {
+        _this3.setState(_defineProperty({}, vector, _this3.state[vector] + count));
+        _this3.updateMatrix(_this3.state.rows, _this3.state.columns);
+      };
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this4 = this;
+
+      var matrixView = this.state.matrix.map(function (row) {
+
+        var units = row.map(function (unit) {
+          return (0, _preact.h)('input', { type: 'text',
+            className: 'unit',
+            value: unit.value,
+            onChange: _this4.updateValue(unit.position),
+            position: unit.position });
+        });
+
+        return (0, _preact.h)(
+          'div',
+          { className: 'flex' },
+          units
+        );
+      });
+
+      return (0, _preact.h)(
+        'div',
+        { className: 'matrix-wrapper' },
+        (0, _preact.h)(
+          'div',
+          { className: 'flex' },
+          (0, _preact.h)(
+            'button',
+            { onClick: this.createListener('rows', 1) },
+            'Add Row'
+          ),
+          (0, _preact.h)(
+            'button',
+            { onClick: this.createListener('columns', 1) },
+            'Add Column'
+          ),
+          (0, _preact.h)(
+            'button',
+            { onClick: this.createListener('rows', -1) },
+            'Delete Row'
+          ),
+          (0, _preact.h)(
+            'button',
+            { onClick: this.createListener('columns', -1) },
+            'Delete Column'
+          ),
+          (0, _preact.h)(
+            'button',
+            { onClick: this.transpose.bind(this) },
+            'Transpose'
+          )
+        ),
+        matrixView
+      );
+    }
+  }]);
+
+  return MatrixView;
+}(_preact.Component);
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.transpose = transpose;
+exports.flattenMatrixMap = flattenMatrixMap;
+exports.createMatrix = createMatrix;
+function transpose(matrix) {
+  var rowCount = matrix[0].length;
+  var columnCount = matrix.length;
+  return Array(rowCount).fill().map(function (row, rowIdx) {
+    return Array(columnCount).fill().map(function (col, colIdx) {
+      return {
+        position: [rowIdx, colIdx],
+        value: matrix[colIdx][rowIdx].value
+      };
+    });
+  });
+}
+
+function flattenMatrixMap(matrix) {
+  var mappedMatrix = {};
+  matrix.forEach(function (row, rowIdx) {
+    row.forEach(function (unit, colIdx) {
+      mappedMatrix["" + [rowIdx, colIdx]] = unit;
+    });
+  });
+  return mappedMatrix;
+}
+
+function createMatrix(rowCount, columnCount, oldMatrix) {
+  var mappedMatrix = oldMatrix ? flattenMatrixMap(oldMatrix) : {};
+
+  return Array(rowCount).fill().map(function (row, rowIdx) {
+    return Array(columnCount).fill().map(function (col, colIdx) {
+      var oldValue = mappedMatrix["" + [rowIdx, colIdx]];
+      return {
+        position: [rowIdx, colIdx],
+        value: oldValue ? oldValue.value : 0
+      };
+    });
+  });
+}
 
 /***/ })
 /******/ ]);

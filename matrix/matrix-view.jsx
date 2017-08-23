@@ -1,7 +1,8 @@
 import { h, render, Component } from 'preact';
+import { createMatrix, transpose } from './matrix'
 /** @jsx h */
 
-export class Matrix extends Component {
+export class MatrixView extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -12,25 +13,16 @@ export class Matrix extends Component {
   }
 
   componentDidMount() {
-    this.updateMatrix(this.state.rows, this.state.columns)
+    this.setState({matrix: createMatrix(this.state.rows, this.state.columns)})
+  }
+
+  transpose() {
+    this.setState({matrix: transpose(this.state.matrix)})
   }
 
   updateMatrix(rowCount, columnCount) {
-
-    let rows = Array(rowCount).fill().map((row, rowIdx) => {
-      return Array(columnCount).fill().map((unit, colIdx) => {
-        let existingRow = this.state.matrix[rowIdx]
-        let value
-        if (existingRow && existingRow[colIdx]) {
-          value = Object.assign({}, existingRow[colIdx])
-        } else {
-          value = { position: [rowIdx, colIdx], value: undefined }
-        }
-        return value
-      })
-    })
-
-    this.setState({ matrix: rows })
+    let newMatrix = createMatrix(rowCount, columnCount, this.state.matrix)
+    this.setState({ matrix: newMatrix })
   }
 
   updateValue(position) {
@@ -69,6 +61,7 @@ export class Matrix extends Component {
           <button onClick={this.createListener('columns', 1)}>Add Column</button>
           <button onClick={this.createListener('rows', -1)}>Delete Row</button>
           <button onClick={this.createListener('columns', -1)}>Delete Column</button>
+          <button onClick={this.transpose.bind(this)}>Transpose</button>
         </div>
         {matrixView}
       </div>

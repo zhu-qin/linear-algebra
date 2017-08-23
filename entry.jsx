@@ -1,7 +1,7 @@
 import { h, render, Component } from 'preact';
-import { Matrix } from './matrix/matrix';
+import { MatrixView } from './matrix/matrix-view';
+import { multiplyMatrix } from './matrix/multiply-matrix'
 /** @jsx h */
-
 
 class Entry extends Component {
   constructor(props) {
@@ -12,14 +12,16 @@ class Entry extends Component {
   }
 
   multiplyMatrix(e) {
-    debugger
+    let matrices = Array(this.state.matrixCount)
+                      .fill()
+                      .map((matrix, idx) => this[`matrix${idx}`].state.matrix)
+    multiplyMatrix(...matrices)
   }
 
   render() {
-    let matrices = Array(this.state.matrixCount).fill().map((el, idx) => {
-      return <Matrix ref={(matrix) => this[`matrix${idx}`] = matrix}/>
-    })
-
+    let matrices = Array(this.state.matrixCount)
+                      .fill()
+                      .map((el, idx) => <MatrixView ref={(matrix) => this[`matrix${idx}`] = matrix}/>)
     return (
       <div>
         <div className="flex">
@@ -29,12 +31,12 @@ class Entry extends Component {
           <button onClick={this.multiplyMatrix.bind(this)}>Multiply</button>
         </div>
         <div className="flex">
-          <Matrix ref={(matrix) => this[`matrixResult`] = matrix}/>
+          <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
         </div>
       </div>
     )
   }
+
 }
 
-document.addEventListener('DOMContentLoaded',
-  () => render(<Entry/>, document.getElementById('root')))
+document.addEventListener('DOMContentLoaded', () => render(<Entry/>, document.getElementById('root')))
