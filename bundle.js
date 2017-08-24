@@ -1045,20 +1045,24 @@ var preact = {
 
 
 /***/ }),
-/* 1 */,
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Main = undefined;
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _preact = __webpack_require__(0);
 
-var _matrixView = __webpack_require__(6);
+var _matrixView = __webpack_require__(4);
 
-var _multiplyMatrix2 = __webpack_require__(4);
+var _multiplyMatrix2 = __webpack_require__(5);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -1070,13 +1074,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /** @jsx h */
 
-var Entry = function (_Component) {
-  _inherits(Entry, _Component);
+var Main = exports.Main = function (_Component) {
+  _inherits(Main, _Component);
 
-  function Entry(props) {
-    _classCallCheck(this, Entry);
+  function Main(props) {
+    _classCallCheck(this, Main);
 
-    var _this = _possibleConstructorReturn(this, (Entry.__proto__ || Object.getPrototypeOf(Entry)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
     _this.state = {
       matrixCount: 2
@@ -1084,7 +1088,7 @@ var Entry = function (_Component) {
     return _this;
   }
 
-  _createClass(Entry, [{
+  _createClass(Main, [{
     key: 'multiplyMatrix',
     value: function multiplyMatrix(e) {
       var _this2 = this;
@@ -1132,16 +1136,28 @@ var Entry = function (_Component) {
     }
   }]);
 
-  return Entry;
+  return Main;
 }(_preact.Component);
 
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _preact = __webpack_require__(0);
+
+var _main = __webpack_require__(1);
+
+/** @jsx h */
+
 document.addEventListener('DOMContentLoaded', function () {
-  return (0, _preact.render)((0, _preact.h)(Entry, null), document.getElementById('root'));
+  return (0, _preact.render)((0, _preact.h)(_main.Main, null), document.getElementById('root'));
 });
 
 /***/ }),
-/* 3 */,
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1150,33 +1166,110 @@ document.addEventListener('DOMContentLoaded', function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.multiplyMatrix = multiplyMatrix;
 
-var _matrix = __webpack_require__(7);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function multiplyMatrix() {
-  var currentResult = arguments[0];
-  for (var i = 1; i < arguments.length; i++) {
-    currentResult = multiplyTwoMatrices(currentResult, arguments[i]);
+exports.transpose = transpose;
+exports.flattenMatrixMap = flattenMatrixMap;
+exports.createMatrix = createMatrix;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MatrixContainer = exports.MatrixContainer = function () {
+  function MatrixContainer(rows, columns) {
+    _classCallCheck(this, MatrixContainer);
+
+    this.rows = rows;
+    this.columns = columns;
+    this.matrix = undefined;
+    this.createMatrix(rows, columns);
   }
-  return currentResult;
+
+  _createClass(MatrixContainer, [{
+    key: "transpose",
+    value: function transpose() {
+      var _this = this;
+
+      var rowCount = this.matrix[0].length;
+      var columnCount = this.matrix.length;
+      return Array(rowCount).fill().map(function (row, rowIdx) {
+        return Array(columnCount).fill().map(function (col, colIdx) {
+          return {
+            position: [rowIdx, colIdx],
+            value: _this.matrix[colIdx][rowIdx].value
+          };
+        });
+      });
+    }
+  }, {
+    key: "flattenMatrixMap",
+    value: function flattenMatrixMap() {
+      var mappedMatrix = {};
+      this.matrix.forEach(function (row, rowIdx) {
+        row.forEach(function (unit, colIdx) {
+          mappedMatrix["" + [rowIdx, colIdx]] = unit;
+        });
+      });
+      return mappedMatrix;
+    }
+  }, {
+    key: "createMatrix",
+    value: function createMatrix(rowCount, columnCount, oldMatrix) {
+      var mappedMatrix = oldMatrix ? this.flattenMatrixMap(oldMatrix) : {};
+      return Array(rowCount).fill().map(function (row, rowIdx) {
+        return Array(columnCount).fill().map(function (col, colIdx) {
+          var oldValue = mappedMatrix["" + [rowIdx, colIdx]];
+          return {
+            position: [rowIdx, colIdx],
+            value: oldValue ? oldValue.value : 0
+          };
+        });
+      });
+    }
+  }]);
+
+  return MatrixContainer;
+}();
+
+function transpose(matrix) {
+  var rowCount = matrix[0].length;
+  var columnCount = matrix.length;
+  return Array(rowCount).fill().map(function (row, rowIdx) {
+    return Array(columnCount).fill().map(function (col, colIdx) {
+      return {
+        position: [rowIdx, colIdx],
+        value: matrix[colIdx][rowIdx].value
+      };
+    });
+  });
 }
 
-function multiplyTwoMatrices(matrixOne, matrixTwo) {
-  var transposed = (0, _matrix.transpose)(matrixTwo);
-  for (var row = 0; row < matrixOne.length; row++) {}
+function flattenMatrixMap(matrix) {
+  var mappedMatrix = {};
+  matrix.forEach(function (row, rowIdx) {
+    row.forEach(function (unit, colIdx) {
+      mappedMatrix["" + [rowIdx, colIdx]] = unit;
+    });
+  });
+  return mappedMatrix;
 }
 
-function dotProduct(row, column) {
-  return row.reduce(function (sum, el, idx) {
-    sum = sum + row[idx] * column[idx];
-    return sum;
+function createMatrix(rowCount, columnCount, oldMatrix) {
+  var mappedMatrix = oldMatrix ? flattenMatrixMap(oldMatrix) : {};
+
+  return Array(rowCount).fill().map(function (row, rowIdx) {
+    return Array(columnCount).fill().map(function (col, colIdx) {
+      var oldValue = mappedMatrix["" + [rowIdx, colIdx]];
+      return {
+        position: [rowIdx, colIdx],
+        value: oldValue ? oldValue.value : 0
+      };
+    });
   });
 }
 
 /***/ }),
-/* 5 */,
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1191,7 +1284,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _preact = __webpack_require__(0);
 
-var _matrix = __webpack_require__(7);
+var _matrix = __webpack_require__(3);
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -1222,12 +1315,16 @@ var MatrixView = exports.MatrixView = function (_Component) {
   _createClass(MatrixView, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.setState({ matrix: (0, _matrix.createMatrix)(this.state.rows, this.state.columns) });
+      this.setState({
+        matrix: (0, _matrix.createMatrix)(this.state.rows, this.state.columns)
+      });
     }
   }, {
     key: 'transpose',
     value: function transpose() {
-      this.setState({ matrix: (0, _matrix.transpose)(this.state.matrix) });
+      this.setState({
+        matrix: (0, _matrix.transpose)(this.state.matrix)
+      });
     }
   }, {
     key: 'updateMatrix',
@@ -1318,7 +1415,7 @@ var MatrixView = exports.MatrixView = function (_Component) {
 }(_preact.Component);
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1327,43 +1424,27 @@ var MatrixView = exports.MatrixView = function (_Component) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transpose = transpose;
-exports.flattenMatrixMap = flattenMatrixMap;
-exports.createMatrix = createMatrix;
-function transpose(matrix) {
-  var rowCount = matrix[0].length;
-  var columnCount = matrix.length;
-  return Array(rowCount).fill().map(function (row, rowIdx) {
-    return Array(columnCount).fill().map(function (col, colIdx) {
-      return {
-        position: [rowIdx, colIdx],
-        value: matrix[colIdx][rowIdx].value
-      };
-    });
-  });
+exports.multiplyMatrix = multiplyMatrix;
+
+var _matrix = __webpack_require__(3);
+
+function multiplyMatrix() {
+  var currentResult = arguments[0];
+  for (var i = 1; i < arguments.length; i++) {
+    currentResult = multiplyTwoMatrices(currentResult, arguments[i]);
+  }
+  return currentResult;
 }
 
-function flattenMatrixMap(matrix) {
-  var mappedMatrix = {};
-  matrix.forEach(function (row, rowIdx) {
-    row.forEach(function (unit, colIdx) {
-      mappedMatrix["" + [rowIdx, colIdx]] = unit;
-    });
-  });
-  return mappedMatrix;
+function multiplyTwoMatrices(matrixOne, matrixTwo) {
+  var transposed = (0, _matrix.transpose)(matrixTwo);
+  for (var row = 0; row < matrixOne.length; row++) {}
 }
 
-function createMatrix(rowCount, columnCount, oldMatrix) {
-  var mappedMatrix = oldMatrix ? flattenMatrixMap(oldMatrix) : {};
-
-  return Array(rowCount).fill().map(function (row, rowIdx) {
-    return Array(columnCount).fill().map(function (col, colIdx) {
-      var oldValue = mappedMatrix["" + [rowIdx, colIdx]];
-      return {
-        position: [rowIdx, colIdx],
-        value: oldValue ? oldValue.value : 0
-      };
-    });
+function dotProduct(row, column) {
+  return row.reduce(function (sum, el, idx) {
+    sum = sum + row[idx] * column[idx];
+    return sum;
   });
 }
 

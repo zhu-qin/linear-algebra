@@ -1,5 +1,5 @@
 import { h, render, Component } from 'preact';
-import { createMatrix, transpose } from './matrix'
+import { createMatrix, transpose, MatrixContainer } from './matrix'
 /** @jsx h */
 
 export class MatrixView extends Component {
@@ -13,11 +13,15 @@ export class MatrixView extends Component {
   }
 
   componentDidMount() {
-    this.setState({matrix: createMatrix(this.state.rows, this.state.columns)})
+    this.setState({
+      matrix: createMatrix(this.state.rows, this.state.columns)
+    })
   }
 
   transpose() {
-    this.setState({matrix: transpose(this.state.matrix)})
+    this.setState({
+      matrix: transpose(this.state.matrix)
+    })
   }
 
   updateMatrix(rowCount, columnCount) {
