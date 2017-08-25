@@ -9,8 +9,14 @@ export class Main extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      matrixCount: 2
+      matrices: {}
     }
+  }
+
+  componentDidMount() {
+    reduxStore.subscribe(() => this.setState( { matrices: reduxStore.getState() }))
+    reduxActions.createMatrix(3, 3)
+    reduxActions.createMatrix(3, 3)
   }
 
   multiplyMatrix(e) {
@@ -21,9 +27,15 @@ export class Main extends Component {
   }
 
   render() {
-    let matrices = Array(this.state.matrixCount)
-                      .fill()
-                      .map((el, idx) => <MatrixView ref={(matrix) => this[`matrix${idx}`] = matrix}/>)
+
+    let matrices = Object.keys(this.state.matrices).map((matrixKey) => {
+      return <MatrixView key={`matrix${matrixKey}`}
+                         matrixContainer={this.state.matrices[matrixKey]} />
+    })
+
+    // <div className="flex">
+    //   <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
+    // </div>
     return (
       <div>
         <div className="flex">
@@ -31,9 +43,6 @@ export class Main extends Component {
         </div>
         <div className="flex">
           <button onClick={this.multiplyMatrix.bind(this)}>Multiply</button>
-        </div>
-        <div className="flex">
-          <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
         </div>
       </div>
     )

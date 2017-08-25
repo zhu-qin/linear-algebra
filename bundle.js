@@ -1085,31 +1085,45 @@ var Main = exports.Main = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
     _this.state = {
-      matrixCount: 2
+      matrices: {}
     };
     return _this;
   }
 
   _createClass(Main, [{
-    key: 'multiplyMatrix',
-    value: function multiplyMatrix(e) {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
       var _this2 = this;
 
+      _store.reduxStore.subscribe(function () {
+        return _this2.setState({ matrices: _store.reduxStore.getState() });
+      });
+      _store.reduxActions.createMatrix(3, 3);
+      _store.reduxActions.createMatrix(3, 3);
+    }
+  }, {
+    key: 'multiplyMatrix',
+    value: function multiplyMatrix(e) {
+      var _this3 = this;
+
       var matrices = Array(this.state.matrixCount).fill().map(function (matrix, idx) {
-        return _this2['matrix' + idx].state.matrix;
+        return _this3['matrix' + idx].state.matrix;
       });
       _multiplyMatrix2.multiplyMatrix.apply(undefined, _toConsumableArray(matrices));
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
-      var matrices = Array(this.state.matrixCount).fill().map(function (el, idx) {
-        return (0, _preact.h)(_matrixView.MatrixView, { ref: function ref(matrix) {
-            return _this3['matrix' + idx] = matrix;
-          } });
+      var matrices = Object.keys(this.state.matrices).map(function (matrixKey) {
+        return (0, _preact.h)(_matrixView.MatrixView, { key: 'matrix' + matrixKey,
+          matrixContainer: _this4.state.matrices[matrixKey] });
       });
+
+      // <div className="flex">
+      //   <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
+      // </div>
       return (0, _preact.h)(
         'div',
         null,
@@ -1126,13 +1140,6 @@ var Main = exports.Main = function (_Component) {
             { onClick: this.multiplyMatrix.bind(this) },
             'Multiply'
           )
-        ),
-        (0, _preact.h)(
-          'div',
-          { className: 'flex' },
-          (0, _preact.h)(_matrixView.MatrixView, { ref: function ref(matrix) {
-              return _this3['matrixResult'] = matrix;
-            } })
         )
       );
     }
@@ -1213,6 +1220,8 @@ function createMatrix(rowCount, columnCount, oldMatrix) {
   });
 }
 
+var MATRIX_ID = 0;
+
 var MatrixContainer = exports.MatrixContainer = function () {
   function MatrixContainer(rows, columns) {
     _classCallCheck(this, MatrixContainer);
@@ -1220,6 +1229,7 @@ var MatrixContainer = exports.MatrixContainer = function () {
     this.rows = rows;
     this.columns = columns;
     this.matrix = createMatrix(rows, columns);
+    this.id = MATRIX_ID++;
   }
 
   _createClass(MatrixContainer, [{
@@ -1241,6 +1251,8 @@ var MatrixContainer = exports.MatrixContainer = function () {
   }, {
     key: "updateMatrixSize",
     value: function updateMatrixSize(rows, columns) {
+      this.rows = rows;
+      this.columns = columns;
       this.matrix = createMatrix(rows, columns, this.matrix);
     }
   }, {
@@ -1271,7 +1283,7 @@ var _preact = __webpack_require__(0);
 
 var _matrix = __webpack_require__(3);
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _store = __webpack_require__(6);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1287,24 +1299,10 @@ var MatrixView = exports.MatrixView = function (_Component) {
   function MatrixView(props) {
     _classCallCheck(this, MatrixView);
 
-    var _this = _possibleConstructorReturn(this, (MatrixView.__proto__ || Object.getPrototypeOf(MatrixView)).call(this, props));
-
-    _this.state = {
-      rows: 3,
-      columns: 3,
-      matrix: []
-    };
-    return _this;
+    return _possibleConstructorReturn(this, (MatrixView.__proto__ || Object.getPrototypeOf(MatrixView)).call(this, props));
   }
 
   _createClass(MatrixView, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.setState({
-        matrix: (0, _matrix.createMatrix)(this.state.rows, this.state.columns)
-      });
-    }
-  }, {
     key: 'transpose',
     value: function transpose() {
       this.setState({
@@ -1312,19 +1310,12 @@ var MatrixView = exports.MatrixView = function (_Component) {
       });
     }
   }, {
-    key: 'updateMatrix',
-    value: function updateMatrix(rowCount, columnCount) {
-      var newMatrix = (0, _matrix.createMatrix)(rowCount, columnCount, this.state.matrix);
-      this.setState({ matrix: newMatrix });
-    }
-  }, {
     key: 'updateValue',
     value: function updateValue(position) {
       var _this2 = this;
 
       return function (e) {
-        _this2.state.matrix[position[0]][position[1]].value = e.currentTarget.value;
-        _this2.setState({ matrix: _this2.state.matrix });
+        _store.reduxActions.updateMatrixValue(position, e.currentTarget.value, _this2.props.matrixContainer.id);
       };
     }
   }, {
@@ -1333,8 +1324,10 @@ var MatrixView = exports.MatrixView = function (_Component) {
       var _this3 = this;
 
       return function (e) {
-        _this3.setState(_defineProperty({}, vector, _this3.state[vector] + count));
-        _this3.updateMatrix(_this3.state.rows, _this3.state.columns);
+        var container = _this3.props.matrixContainer;
+        var rows = vector === 'rows' ? container.rows + count : container.rows;
+        var columns = vector === 'columns' ? container.columns + count : container.columns;
+        _store.reduxActions.updateMatrixSize(rows, columns, container.id);
       };
     }
   }, {
@@ -1342,8 +1335,11 @@ var MatrixView = exports.MatrixView = function (_Component) {
     value: function render() {
       var _this4 = this;
 
-      var matrixView = this.state.matrix.map(function (row) {
+      if (!this.props.matrixContainer) {
+        return;
+      }
 
+      var matrixView = this.props.matrixContainer.matrix.map(function (row) {
         var units = row.map(function (unit) {
           return (0, _preact.h)('input', { type: 'text',
             className: 'unit',
@@ -1461,7 +1457,7 @@ var matrixReducer = function matrixReducer() {
   switch (action.type) {
     case 'CREATE_MATRIX':
       container = new _matrix.MatrixContainer(action.rows, action.columns);
-      return Object.assign({}, state, _defineProperty({}, matrix.id, container));
+      return Object.assign({}, state, _defineProperty({}, container.id, container));
       break;
     case 'UPDATE_MATRIX_VALUE':
       container = state[action.matrixID];

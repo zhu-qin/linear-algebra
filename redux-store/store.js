@@ -7,7 +7,7 @@ const matrixReducer = (state = {}, action) => {
   switch (action.type) {
     case 'CREATE_MATRIX':
       container = new MatrixContainer(action.rows, action.columns)
-      return Object.assign({}, state, { [matrix.id]: container })
+      return Object.assign({}, state, { [container.id]: container })
       break;
     case 'UPDATE_MATRIX_VALUE':
       container = state[action.matrixID]

@@ -34,6 +34,7 @@ export function createMatrix(rowCount, columnCount, oldMatrix) {
   })
 }
 
+let MATRIX_ID = 0
 
 export class MatrixContainer {
 
@@ -41,6 +42,7 @@ export class MatrixContainer {
     this.rows = rows
     this.columns = columns
     this.matrix = createMatrix(rows, columns)
+    this.id = MATRIX_ID++
   }
 
   transpose() {
@@ -57,6 +59,8 @@ export class MatrixContainer {
   }
 
   updateMatrixSize(rows, columns) {
+    this.rows = rows
+    this.columns = columns
     this.matrix = createMatrix(rows, columns, this.matrix)
   }
 

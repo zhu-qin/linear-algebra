@@ -1,21 +1,11 @@
 import { h, render, Component } from 'preact';
 import { createMatrix, transpose, MatrixContainer } from './matrix'
+import { reduxActions } from '../redux-store/store'
 /** @jsx h */
 
 export class MatrixView extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      rows: 3,
-      columns: 3,
-      matrix: []
-    }
-  }
-
-  componentDidMount() {
-    this.setState({
-      matrix: createMatrix(this.state.rows, this.state.columns)
-    })
   }
 
   transpose() {
@@ -24,29 +14,34 @@ export class MatrixView extends Component {
     })
   }
 
-  updateMatrix(rowCount, columnCount) {
-    let newMatrix = createMatrix(rowCount, columnCount, this.state.matrix)
-    this.setState({ matrix: newMatrix })
-  }
-
   updateValue(position) {
     return (e) => {
-      this.state.matrix[position[0]][position[1]].value = e.currentTarget.value
-      this.setState({matrix: this.state.matrix})
+      reduxActions.updateMatrixValue(
+        position,
+        e.currentTarget.value,
+        this.props.matrixContainer.id
+      )
     }
   }
 
   createListener(vector, count) {
     return (e) => {
-      this.setState({[vector]: this.state[vector] + count})
-      this.updateMatrix(this.state.rows, this.state.columns)
+      let container = this.props.matrixContainer
+      let rows = vector === 'rows' ?
+        container.rows + count : container.rows
+      let columns = vector === 'columns' ?
+        container.columns + count : container.columns
+      reduxActions.updateMatrixSize(rows, columns, container.id)
     }
   }
 
   render() {
 
-    let matrixView = this.state.matrix.map((row) => {
+    if (!this.props.matrixContainer) {
+      return
+    }
 
+    let matrixView = this.props.matrixContainer.matrix.map((row) => {
       let units = row.map((unit) => {
         return (<input type="text"
                        className="unit"
