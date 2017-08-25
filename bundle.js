@@ -1095,11 +1095,16 @@ var Main = exports.Main = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      _store.reduxStore.subscribe(function () {
+      this.unsubscribe = _store.reduxStore.subscribe(function () {
         return _this2.setState({ matrices: _store.reduxStore.getState() });
       });
       _store.reduxActions.createMatrix(3, 3);
       _store.reduxActions.createMatrix(3, 3);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.unsubscribe();
     }
   }, {
     key: 'multiplyMatrix',
@@ -1121,9 +1126,6 @@ var Main = exports.Main = function (_Component) {
           matrixContainer: _this4.state.matrices[matrixKey] });
       });
 
-      // <div className="flex">
-      //   <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
-      // </div>
       return (0, _preact.h)(
         'div',
         null,
@@ -1178,24 +1180,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.transpose = transpose;
 exports.flattenMatrixMap = flattenMatrixMap;
 exports.createMatrix = createMatrix;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function transpose(matrix) {
-  var rowCount = matrix[0].length;
-  var columnCount = matrix.length;
-  return Array(rowCount).fill().map(function (row, rowIdx) {
-    return Array(columnCount).fill().map(function (col, colIdx) {
-      return {
-        position: [rowIdx, colIdx],
-        value: matrix[colIdx][rowIdx].value
-      };
-    });
-  });
-}
 
 function flattenMatrixMap(matrix) {
   var mappedMatrix = {};
@@ -1239,7 +1227,7 @@ var MatrixContainer = exports.MatrixContainer = function () {
 
       var rowCount = this.matrix[0].length;
       var columnCount = this.matrix.length;
-      return Array(rowCount).fill().map(function (row, rowIdx) {
+      this.matrix = Array(rowCount).fill().map(function (row, rowIdx) {
         return Array(columnCount).fill().map(function (col, colIdx) {
           return {
             position: [rowIdx, colIdx],
@@ -1305,9 +1293,7 @@ var MatrixView = exports.MatrixView = function (_Component) {
   _createClass(MatrixView, [{
     key: 'transpose',
     value: function transpose() {
-      this.setState({
-        matrix: (0, _matrix.transpose)(this.state.matrix)
-      });
+      _store.reduxActions.transpose(this.props.matrixContainer.id);
     }
   }, {
     key: 'updateValue',
@@ -1466,6 +1452,10 @@ var matrixReducer = function matrixReducer() {
     case 'UPDATE_MATRIX_SIZE':
       container = state[action.matrixID];
       container.updateMatrixSize(action.rows, action.columns);
+      return Object.assign({}, state, _defineProperty({}, action.matrixID, container));
+    case 'TRANSPOSE':
+      container = state[action.matrixID];
+      container.transpose();
       return Object.assign({}, state, _defineProperty({}, action.matrixID, container));
     default:
       return state;
@@ -2752,6 +2742,13 @@ var mapDispatchToActions = exports.mapDispatchToActions = function mapDispatchTo
         type: 'UPDATE_MATRIX_SIZE',
         rows: rows,
         columns: columns,
+        matrixID: matrixID
+      });
+    },
+
+    transpose: function transpose(matrixID) {
+      return dispatch({
+        type: 'TRANSPOSE',
         matrixID: matrixID
       });
     }

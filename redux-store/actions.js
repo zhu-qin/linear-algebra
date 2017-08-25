@@ -19,6 +19,11 @@ export const mapDispatchToActions = (dispatch) => {
       rows: rows,
       columns: columns,
       matrixID: matrixID
+    }),
+
+    transpose: (matrixID) => dispatch({
+      type: 'TRANSPOSE',
+      matrixID: matrixID
     })
   }
 

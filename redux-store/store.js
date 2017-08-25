@@ -17,6 +17,10 @@ const matrixReducer = (state = {}, action) => {
       container = state[action.matrixID]
       container.updateMatrixSize(action.rows, action.columns)
       return Object.assign({}, state, { [action.matrixID]: container })
+    case 'TRANSPOSE':
+      container = state[action.matrixID]
+      container.transpose()
+      return Object.assign({}, state, { [action.matrixID]: container })
     default:
       return state
   }

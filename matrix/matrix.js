@@ -1,16 +1,3 @@
-export function transpose(matrix) {
-  let rowCount = matrix[0].length
-  let columnCount = matrix.length
-  return Array(rowCount).fill().map((row, rowIdx) => {
-    return Array(columnCount).fill().map((col, colIdx) => {
-      return {
-        position: [rowIdx, colIdx],
-        value: matrix[colIdx][rowIdx].value
-      }
-    })
-  })
-}
-
 export function flattenMatrixMap(matrix) {
   let mappedMatrix = {}
   matrix.forEach((row, rowIdx) => {
@@ -48,7 +35,7 @@ export class MatrixContainer {
   transpose() {
     let rowCount = this.matrix[0].length
     let columnCount = this.matrix.length
-    return Array(rowCount).fill().map((row, rowIdx) => {
+    this.matrix = Array(rowCount).fill().map((row, rowIdx) => {
       return Array(columnCount).fill().map((col, colIdx) => {
         return {
           position: [rowIdx, colIdx],

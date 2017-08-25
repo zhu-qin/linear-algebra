@@ -14,9 +14,13 @@ export class Main extends Component {
   }
 
   componentDidMount() {
-    reduxStore.subscribe(() => this.setState( { matrices: reduxStore.getState() }))
+    this.unsubscribe = reduxStore.subscribe(() => this.setState( { matrices: reduxStore.getState() }))
     reduxActions.createMatrix(3, 3)
     reduxActions.createMatrix(3, 3)
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe()
   }
 
   multiplyMatrix(e) {
@@ -33,9 +37,6 @@ export class Main extends Component {
                          matrixContainer={this.state.matrices[matrixKey]} />
     })
 
-    // <div className="flex">
-    //   <MatrixView ref={(matrix) => this[`matrixResult`] = matrix}/>
-    // </div>
     return (
       <div>
         <div className="flex">

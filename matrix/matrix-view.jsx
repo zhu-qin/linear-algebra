@@ -9,9 +9,7 @@ export class MatrixView extends Component {
   }
 
   transpose() {
-    this.setState({
-      matrix: transpose(this.state.matrix)
-    })
+    reduxActions.transpose(this.props.matrixContainer.id)
   }
 
   updateValue(position) {
