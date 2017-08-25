@@ -1171,11 +1171,24 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+exports.transpose = transpose;
 exports.flattenMatrixMap = flattenMatrixMap;
 exports.createMatrix = createMatrix;
-exports.transpose = transpose;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function transpose(matrix) {
+  var rowCount = matrix[0].length;
+  var columnCount = matrix.length;
+  return Array(rowCount).fill().map(function (row, rowIdx) {
+    return Array(columnCount).fill().map(function (col, colIdx) {
+      return {
+        position: [rowIdx, colIdx],
+        value: matrix[colIdx][rowIdx].value
+      };
+    });
+  });
+}
 
 function flattenMatrixMap(matrix) {
   var mappedMatrix = {};
@@ -1189,7 +1202,6 @@ function flattenMatrixMap(matrix) {
 
 function createMatrix(rowCount, columnCount, oldMatrix) {
   var mappedMatrix = oldMatrix ? flattenMatrixMap(oldMatrix) : {};
-
   return Array(rowCount).fill().map(function (row, rowIdx) {
     return Array(columnCount).fill().map(function (col, colIdx) {
       var oldValue = mappedMatrix["" + [rowIdx, colIdx]];
@@ -1240,19 +1252,6 @@ var MatrixContainer = exports.MatrixContainer = function () {
 
   return MatrixContainer;
 }();
-
-function transpose(matrix) {
-  var rowCount = matrix[0].length;
-  var columnCount = matrix.length;
-  return Array(rowCount).fill().map(function (row, rowIdx) {
-    return Array(columnCount).fill().map(function (col, colIdx) {
-      return {
-        position: [rowIdx, colIdx],
-        value: matrix[colIdx][rowIdx].value
-      };
-    });
-  });
-}
 
 /***/ }),
 /* 4 */
@@ -1450,7 +1449,7 @@ var _redux = __webpack_require__(25);
 
 var _matrix = __webpack_require__(3);
 
-var _store = __webpack_require__(6);
+var _actions = __webpack_require__(30);
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -1477,8 +1476,11 @@ var matrixReducer = function matrixReducer() {
   }
 };
 
-var reduxStore = exports.reduxStore = (0, _redux.createStore)((0, _redux.combineReducers)(matrixReducer), {});
-var reduxActions = exports.reduxActions = (0, _store.mapDispatchToActions)(store.dispatch);
+var reduxStore = (0, _redux.createStore)(matrixReducer, {});
+var reduxActions = (0, _actions.mapDispatchToActions)(reduxStore.dispatch);
+
+exports.reduxStore = reduxStore;
+exports.reduxActions = reduxActions;
 
 /***/ }),
 /* 7 */
@@ -2718,6 +2720,47 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var mapDispatchToActions = exports.mapDispatchToActions = function mapDispatchToActions(dispatch) {
+
+  return {
+    createMatrix: function createMatrix(rows, columns) {
+      return dispatch({
+        type: 'CREATE_MATRIX',
+        rows: rows,
+        columns: columns
+      });
+    },
+
+    updateMatrixValue: function updateMatrixValue(position, value, matrixID) {
+      return dispatch({
+        type: 'UPDATE_MATRIX_VALUE',
+        matrixID: matrixID,
+        position: position,
+        value: value
+      });
+    },
+
+    updateMatrixSize: function updateMatrixSize(rows, columns, matrixID) {
+      return dispatch({
+        type: 'UPDATE_MATRIX_SIZE',
+        rows: rows,
+        columns: columns,
+        matrixID: matrixID
+      });
+    }
+  };
+};
 
 /***/ })
 /******/ ]);

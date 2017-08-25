@@ -1,6 +1,6 @@
 import { createStore, combineReducers } from 'redux'
 import { MatrixContainer } from '../matrix/matrix'
-import { mapDispatchToActions } from './store'
+import { mapDispatchToActions } from './actions'
 
 const matrixReducer = (state = {}, action) => {
   let container
@@ -23,5 +23,10 @@ const matrixReducer = (state = {}, action) => {
 }
 
 
-export const reduxStore = createStore(combineReducers(matrixReducer), {})
-export const reduxActions = mapDispatchToActions(store.dispatch)
+const reduxStore = createStore(matrixReducer, {})
+const reduxActions = mapDispatchToActions(reduxStore.dispatch)
+
+export {
+  reduxStore,
+  reduxActions
+}

@@ -52,7 +52,7 @@ export class MatrixView extends Component {
                        className="unit"
                        value={unit.value}
                        onChange={this.updateValue(unit.position)}
-                       position={unit.position}/>)
+                       position={unit.position} />)
       })
 
       return <div className={'flex'}>{units}</div>
