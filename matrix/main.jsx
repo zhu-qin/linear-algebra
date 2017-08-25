@@ -1,6 +1,8 @@
 import { h, render, Component } from 'preact';
 import { MatrixView } from './matrix-view';
 import { multiplyMatrix } from './multiply-matrix'
+import { reduxStore, reduxActions } from '../redux-store/store'
+
 /** @jsx h */
 
 export class Main extends Component {
