@@ -33,10 +33,11 @@ export class MatrixContainer {
   }
 
   transpose() {
-    let rowCount = this.matrix[0].length
-    let columnCount = this.matrix.length
-    this.matrix = Array(rowCount).fill().map((row, rowIdx) => {
-      return Array(columnCount).fill().map((col, colIdx) => {
+    this.rows = this.matrix[0].length
+    this.columns = this.matrix.length
+
+    this.matrix = Array(this.rows).fill().map((row, rowIdx) => {
+      return Array(this.columns).fill().map((col, colIdx) => {
         return {
           position: [rowIdx, colIdx],
           value: this.matrix[colIdx][rowIdx].value

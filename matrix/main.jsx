@@ -15,8 +15,8 @@ export class Main extends Component {
 
   componentDidMount() {
     this.unsubscribe = reduxStore.subscribe(() => this.setState( { matrices: reduxStore.getState() }))
-    reduxActions.createMatrix(3, 3)
-    reduxActions.createMatrix(3, 3)
+    reduxActions.createMatrix(5, 5)
+    reduxActions.createMatrix(5, 5)
   }
 
   componentWillUnmount() {

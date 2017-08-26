@@ -31,13 +31,12 @@ export class MatrixView extends Component {
     }
   }
 
-  render() {
-
-    if (!this.props.matrixContainer) {
+  render({ matrixContainer }, state) {
+    if (!matrixContainer) {
       return
     }
 
-    let matrixView = this.props.matrixContainer.matrix.map((row) => {
+    let matrixView = matrixContainer.matrix.map((row) => {
       let units = row.map((unit) => {
         return (<input type="text"
                        className="unit"
@@ -51,7 +50,6 @@ export class MatrixView extends Component {
 
     return (
       <div className="matrix-wrapper">
-        <div>{this.state.words}</div>
         <div className={'flex'}>
           <button onClick={this.createListener('rows', 1)}>Add Row</button>
           <button onClick={this.createListener('columns', 1)}>Add Column</button>

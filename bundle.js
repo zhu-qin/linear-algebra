@@ -1098,8 +1098,8 @@ var Main = exports.Main = function (_Component) {
       this.unsubscribe = _store.reduxStore.subscribe(function () {
         return _this2.setState({ matrices: _store.reduxStore.getState() });
       });
-      _store.reduxActions.createMatrix(3, 3);
-      _store.reduxActions.createMatrix(3, 3);
+      _store.reduxActions.createMatrix(5, 5);
+      _store.reduxActions.createMatrix(5, 5);
     }
   }, {
     key: 'componentWillUnmount',
@@ -1225,10 +1225,11 @@ var MatrixContainer = exports.MatrixContainer = function () {
     value: function transpose() {
       var _this = this;
 
-      var rowCount = this.matrix[0].length;
-      var columnCount = this.matrix.length;
-      this.matrix = Array(rowCount).fill().map(function (row, rowIdx) {
-        return Array(columnCount).fill().map(function (col, colIdx) {
+      this.rows = this.matrix[0].length;
+      this.columns = this.matrix.length;
+
+      this.matrix = Array(this.rows).fill().map(function (row, rowIdx) {
+        return Array(_this.columns).fill().map(function (col, colIdx) {
           return {
             position: [rowIdx, colIdx],
             value: _this.matrix[colIdx][rowIdx].value
@@ -1314,14 +1315,16 @@ var MatrixView = exports.MatrixView = function (_Component) {
     }
   }, {
     key: 'render',
-    value: function render() {
+    value: function render(_ref, state) {
       var _this3 = this;
 
-      if (!this.props.matrixContainer) {
+      var matrixContainer = _ref.matrixContainer;
+
+      if (!matrixContainer) {
         return;
       }
 
-      var matrixView = this.props.matrixContainer.matrix.map(function (row) {
+      var matrixView = matrixContainer.matrix.map(function (row) {
         var units = row.map(function (unit) {
           return (0, _preact.h)('input', { type: 'text',
             className: 'unit',
@@ -1340,11 +1343,6 @@ var MatrixView = exports.MatrixView = function (_Component) {
       return (0, _preact.h)(
         'div',
         { className: 'matrix-wrapper' },
-        (0, _preact.h)(
-          'div',
-          null,
-          this.state.words
-        ),
         (0, _preact.h)(
           'div',
           { className: 'flex' },
