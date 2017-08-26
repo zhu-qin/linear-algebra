@@ -1297,20 +1297,16 @@ var MatrixView = exports.MatrixView = function (_Component) {
     }
   }, {
     key: 'updateValue',
-    value: function updateValue(position) {
-      var _this2 = this;
-
-      return function (e) {
-        _store.reduxActions.updateMatrixValue(position, e.currentTarget.value, _this2.props.matrixContainer.id);
-      };
+    value: function updateValue(position, e) {
+      _store.reduxActions.updateMatrixValue(position, e.currentTarget.value, this.props.matrixContainer.id);
     }
   }, {
     key: 'createListener',
     value: function createListener(vector, count) {
-      var _this3 = this;
+      var _this2 = this;
 
       return function (e) {
-        var container = _this3.props.matrixContainer;
+        var container = _this2.props.matrixContainer;
         var rows = vector === 'rows' ? container.rows + count : container.rows;
         var columns = vector === 'columns' ? container.columns + count : container.columns;
         _store.reduxActions.updateMatrixSize(rows, columns, container.id);
@@ -1319,7 +1315,7 @@ var MatrixView = exports.MatrixView = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
+      var _this3 = this;
 
       if (!this.props.matrixContainer) {
         return;
@@ -1330,7 +1326,7 @@ var MatrixView = exports.MatrixView = function (_Component) {
           return (0, _preact.h)('input', { type: 'text',
             className: 'unit',
             value: unit.value,
-            onChange: _this4.updateValue(unit.position),
+            onKeyUp: _this3.updateValue.bind(_this3, unit.position),
             position: unit.position });
         });
 
@@ -1344,6 +1340,11 @@ var MatrixView = exports.MatrixView = function (_Component) {
       return (0, _preact.h)(
         'div',
         { className: 'matrix-wrapper' },
+        (0, _preact.h)(
+          'div',
+          null,
+          this.state.words
+        ),
         (0, _preact.h)(
           'div',
           { className: 'flex' },

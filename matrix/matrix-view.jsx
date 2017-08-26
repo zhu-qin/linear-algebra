@@ -12,14 +12,12 @@ export class MatrixView extends Component {
     reduxActions.transpose(this.props.matrixContainer.id)
   }
 
-  updateValue(position) {
-    return (e) => {
-      reduxActions.updateMatrixValue(
-        position,
-        e.currentTarget.value,
-        this.props.matrixContainer.id
-      )
-    }
+  updateValue(position, e) {
+        reduxActions.updateMatrixValue(
+          position,
+          e.currentTarget.value,
+          this.props.matrixContainer.id
+        )
   }
 
   createListener(vector, count) {
@@ -44,7 +42,7 @@ export class MatrixView extends Component {
         return (<input type="text"
                        className="unit"
                        value={unit.value}
-                       onChange={this.updateValue(unit.position)}
+                       onKeyUp={this.updateValue.bind(this, unit.position)}
                        position={unit.position} />)
       })
 
@@ -53,6 +51,7 @@ export class MatrixView extends Component {
 
     return (
       <div className="matrix-wrapper">
+        <div>{this.state.words}</div>
         <div className={'flex'}>
           <button onClick={this.createListener('rows', 1)}>Add Row</button>
           <button onClick={this.createListener('columns', 1)}>Add Column</button>
